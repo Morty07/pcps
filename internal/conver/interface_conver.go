@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-//InterfaceToRealType 转成本来的类型
+//InterfaceToRealType interface转至本来的数据类型
 func InterfaceToRealType(m map[string]interface{}) interface{} {
 	for k, v := range m {
 		switch vv := v.(type) {
@@ -23,7 +23,7 @@ func InterfaceToRealType(m map[string]interface{}) interface{} {
 			fmt.Println(k, "is nil", "null")
 		case map[string]interface{}:
 			fmt.Println(k, "is an map:")
-			Print_json(vv)
+			InterfaceToRealType(vv)
 		default:
 			fmt.Println(k, "is of a type I don't know how to handle ", fmt.Sprintf("%T", v))
 		}
