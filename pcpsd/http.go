@@ -9,25 +9,20 @@ import (
 )
 
 //StartHTTPServer 启动http服务
-func StartHTTPServer() {
+func StartHTTPServer(fd *os.File) {
 	e := echo.New()
-	// e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	path := "/Users/chenle/Workspaces/Code/company/pcps/runtime/pcpsd/2019-02-17.log"
-	fd, _ := os.OpenFile(
-		path,
-		os.O_RDWR|os.O_APPEND,
-		0666,
-	)
+	//注册日志中间件 默认os.Stdout 也就是会在控制台打印日志
+	e.Use(middleware.Logger())
+	//修改中间件配置 将日志内容输出到文件
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
+		// Format: "method=${method}, uri=${uri}, status=${status}\n",
 		Output: fd,
 	}))
+	//注册路由
 	e.GET("/hello", hello)
 	e.GET("/ws", startWebsocketServer)
 	e.GET("/list", list)
-	// putLog(e)
-
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
@@ -37,9 +32,4 @@ func hello(c echo.Context) error {
 
 func list(c echo.Context) error {
 	return c.String(http.StatusOK, "dev_list")
-}
-
-func putLog(e *echo.Echo) {
-
-	// e.Logger.SetOutput(fd)
 }
