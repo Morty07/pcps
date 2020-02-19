@@ -2,14 +2,15 @@ package setting
 
 import (
 	"log"
+	"pcps/pcpsd/common"
 	"time"
 
 	"github.com/go-ini/ini"
 )
 
 type PCPS struct {
-	PageSize  int
-	PrefixUrl string
+	PageSize int
+	// PrefixUrl string
 	JwtSecret string
 
 	RuntimeRootPath string
@@ -18,16 +19,15 @@ type PCPS struct {
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
-}
 
-var PCPSSetting = &PCPS{}
+	CuttingLogInterval time.Duration
+	DeleteLogInterval  time.Duration
+}
 
 type Server struct {
 	RunMode  string
-	HttpPort int
+	HttpPort string
 }
-
-var ServerSetting = &Server{}
 
 type Database struct {
 	Type        string
@@ -38,8 +38,6 @@ type Database struct {
 	TablePrefix string
 }
 
-var DatabaseSetting = &Database{}
-
 type Redis struct {
 	Host        string
 	Password    string
@@ -48,27 +46,30 @@ type Redis struct {
 	IdleTimeout time.Duration
 }
 
-var RedisSetting = &Redis{}
+var (
+	PCPSSetting     = &PCPS{}     //项目配置
+	ServerSetting   = &Server{}   //服务相关配置
+	DatabaseSetting = &Database{} //数据库配置
+	RedisSetting    = &Redis{}    //redis配置
+	cfg             *ini.File
+)
 
-var cfg *ini.File
-
+//Setup 初始化配置
 func Setup() {
 	var err error
-	cfg, err = ini.Load("pcpsd/conf/app.ini")
-	if err != nil {
-		log.Fatalf("setting.Setup, fail to parse 'pcpsd/conf/app.ini': %v", err)
+	if cfg, err = ini.Load(common.APP_INI_PATH); err != nil {
+		log.Fatalf("setting.Setup, fail to parse "+common.APP_INI_PATH+": %v", err)
 	}
 
 	mapTo("app", PCPSSetting)
 	mapTo("server", ServerSetting)
 	mapTo("database", DatabaseSetting)
-	mapTo("redis", RedisSetting)
+	// mapTo("redis", RedisSetting)
 }
 
 // mapTo map section
 func mapTo(section string, v interface{}) {
-	err := cfg.Section(section).MapTo(v)
-	if err != nil {
+	if err := cfg.Section(section).MapTo(v); err != nil {
 		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
 	}
 }

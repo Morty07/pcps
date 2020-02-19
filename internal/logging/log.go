@@ -30,8 +30,8 @@ const (
 	FATAL
 )
 
-// Setup initialize the log instance
-func Setup() *os.File {
+// SetFirstLogName 设置启动的时候的日志文件名
+func SetLog() {
 	var err error
 	filePath := getLogFilePath()
 	fileName := getLogFileName()
@@ -39,8 +39,6 @@ func Setup() *os.File {
 	if err != nil {
 		log.Fatalf("logging.Setup err: %v", err)
 	}
-	return F
-	// logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }
 
 // Debug output logs at debug level

@@ -67,12 +67,10 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 // MustOpen maximize trying to open the file
 func MustOpen(fileName, filePath string) (*os.File, error) {
-	dir, err := os.Getwd()
+	src, err := GetAbsolutePath(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("os.Getwd err: %v", err)
+		return nil, err
 	}
-
-	src := dir + "/" + filePath
 	perm := CheckPermission(src)
 	if perm == true {
 		return nil, fmt.Errorf("file.CheckPermission Permission denied src: %s", src)
@@ -89,4 +87,13 @@ func MustOpen(fileName, filePath string) (*os.File, error) {
 	}
 
 	return f, nil
+}
+
+//GetAbsolutePath 获取绝对路径 根据项目相对路径
+func GetAbsolutePath(filePath string) (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("os.Getwd err: %v", err)
+	}
+	return dir + "/" + filePath, nil
 }
