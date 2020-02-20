@@ -1,0 +1,24 @@
+<html>
+
+    <button onclick="closeWs()">点我关闭ws连接</button>
+    <script>
+        var ws = new WebSocket("ws://localhost:1323/ws");
+        ws.onopen = function(evt) {
+            console.log("Connection open ...");
+            ws.send("Hello WebSockets!");
+        };
+        
+        ws.onmessage = function(evt) {
+            console.log("Received Message: " + evt.data);
+        };
+        
+        ws.onclose = function(evt) {
+            console.log("Connection closed.");
+        };
+
+        function closeWs(){
+             ws.close();
+             console.log("click close ws button -> so Connection closed.");
+        }
+    </script>
+</html>

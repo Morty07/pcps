@@ -2,8 +2,8 @@ package pcpsd
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"pcps/pcpsd/common"
 
@@ -33,15 +33,17 @@ func startWebsocketServer(c echo.Context) error {
 		for {
 			<-rateLimiter
 			result := ParseResult{}
-			// file.ReadFileLineByLine()
-			m, err := ReadFileByLine(result)
+			_, err := ReadFileByLine(&result)
 			if err != nil {
-				log.Fatal(err)
+				// log.Fatal(err)
+				fmt.Println(err)
 			}
-			err = websocket.Message.Send(ws, m)
-			if err != nil {
-				log.Fatal(err)
-			}
+			j, _ := json.Marshal(result.Lines)
+			fmt.Println(j)
+			err = websocket.Message.Send(ws, string(j))
+			// if err != nil {
+			// 	log.Fatal(err)
+			// }
 
 			// msg := ""
 			// err = websocket.Message.Receive(ws, &msg)
@@ -54,7 +56,8 @@ func startWebsocketServer(c echo.Context) error {
 	return nil
 }
 
-func ReadFileByLine(r ParseResult) (string, error) {
+//ReadFileByLine 一行行的读取文件
+func ReadFileByLine(r *ParseResult) (string, error) {
 	f, err := os.Open(common.READ_LOG_PATH)
 	if err != nil {
 		return "", err
@@ -68,10 +71,10 @@ func ReadFileByLine(r ParseResult) (string, error) {
 
 		s, err := ParseLogCameraInfo(r, str)
 		if err != nil {
+			fmt.Println("last")
 			return "", err
 		}
 		fmt.Println(s)
-		time.Sleep(time.Second * 1)
 		line++
 	}
 

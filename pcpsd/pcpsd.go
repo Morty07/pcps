@@ -5,11 +5,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 //ParseLogCameraInfo 解析日志中摄像头传递的信息
-func ParseLogCameraInfo(r ParseResult, s string) (bool, error) {
+func ParseLogCameraInfo(r *ParseResult, s string) (bool, error) {
 	startIndex := strings.Index(s, "{")
 	endIndex := strings.LastIndex(s, "}")
 	json := s[startIndex : endIndex+1]
@@ -28,7 +27,7 @@ func ParseLogCameraInfo(r ParseResult, s string) (bool, error) {
 }
 
 //FilterByConditionCameraInfo 筛选解析出的信息
-func FilterByConditionCameraInfo(r ParseResult, m string, s string) (bool, error) {
+func FilterByConditionCameraInfo(r *ParseResult, m string, s string) (bool, error) {
 	i := strings.Index(m, "\"time\": \"")
 	t, err := strconv.ParseInt(m[i+9:i+22], 10, 64)
 	if err != nil {
@@ -37,11 +36,11 @@ func FilterByConditionCameraInfo(r ParseResult, m string, s string) (bool, error
 	//以下注释是根据日志中的数据得出来的测试数据
 	tenUnixTime := t / 1000
 	// fmt.Println(tenUnixTime)
-	now := time.Now().Unix()
-	// var now int64
-	// now = 1576052159
-	left := now - 30
-	// left := now - 120
+	// now := time.Now().Unix()
+	var now int64
+	now = 1576052159
+	// left := now - 30
+	left := now - 120
 	if r.LastTime != 0 {
 		left = r.LastTime
 	}
@@ -50,8 +49,9 @@ func FilterByConditionCameraInfo(r ParseResult, m string, s string) (bool, error
 			ImportStr: s,
 			Parser:    m,
 		})
-		r.LastTime = t
+
 		return true, nil
 	}
+	r.LastTime = t
 	return false, fmt.Errorf("it's the last one")
 }
