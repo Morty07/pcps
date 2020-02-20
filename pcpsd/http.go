@@ -113,34 +113,6 @@ func list(c echo.Context) error {
 	j, _ := json.Marshal(w)
 
 	return c.String(http.StatusOK, string(j))
-	// selectSql := "select * from t_user where id = ?"
-	// if err := db.Get(&WyCamerainfo, selectSql, uid); err != nil {
-
-	// }
-
-	// requested_id := c.Param("id")
-	// fmt.Println(requested_id)
-	// db, err := sql.Open("mysql", "root:wangshubo@/test?charset=utf8")
-
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	response := Excuse{Id: "", Error: "true", Quote: ""}
-	// 	return c.JSON(http.StatusInternalServerError, response)
-	// }
-	// defer db.Close()
-
-	// var quote string
-	// var id string
-	// err = db.QueryRow("", requested_id).Scan(&id, &quote)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// response := Excuse{Id: id, Error: "false", Quote: quote}
-	// return c.JSON(http.StatusOK, response)
-
-	// return c.String(http.StatusOK, "dev_list")
 }
 
 type jwtCustomClaims struct {
